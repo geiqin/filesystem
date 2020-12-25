@@ -1,7 +1,6 @@
 package filesystem
 
 import (
-	"github.com/geiqin/filesystem/clouds"
 	"github.com/geiqin/xconfig/client"
 	"github.com/geiqin/xconfig/model"
 	"log"
@@ -55,7 +54,7 @@ func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File,
 	info,_:=maker.Output()
 
 	//选择七牛云上传
-	qi := clouds.NewQiniuStorage(s.getCloudConf(s.disk))
+	qi := NewQiniuStorage(s.getCloudConf(s.disk))
 	ret, err := qi.Upload(info, fileHeader, file)
 	if err != nil {
 		return nil, err

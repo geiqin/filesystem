@@ -1,8 +1,7 @@
-package clouds
+package filesystem
 
 import (
 	"context"
-	"github.com/geiqin/filesystem"
 	"github.com/geiqin/xconfig/model"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
@@ -28,7 +27,7 @@ func NewQiniuStorage(cnf *model.FileSystemInfo) *QiniuStorage {
 }
 
 //七牛云图片上传
-func (q *QiniuStorage) Upload(fileInfo *filesystem.FileInfo, fileHeader *multipart.FileHeader, file multipart.File) (*filesystem.FileInfo, error) {
+func (q *QiniuStorage) Upload(fileInfo *FileInfo, fileHeader *multipart.FileHeader, file multipart.File) (*FileInfo, error) {
 	var reader io.Reader = file
 	var size = fileHeader.Size
 
