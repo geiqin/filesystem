@@ -1,7 +1,9 @@
-package filesystem
+package clouds
 
 import (
 	"context"
+	"github.com/geiqin/filesystem"
+	"github.com/geiqin/xconfig/model"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
 	"io"
@@ -18,22 +20,22 @@ type QiniuPutRet struct {
 }
 
 type QiniuStorage struct {
-	config *DriverConfig
+	driverConf *model.FileSystemInfo
 }
 
-func NewQiniuStorage(cnf *DriverConfig) *QiniuStorage {
-	return  &QiniuStorage{ config: cnf}
+func NewQiniuStorage(cnf *model.FileSystemInfo) *QiniuStorage {
+	return  &QiniuStorage{ driverConf: cnf}
 }
 
 //七牛云图片上传
-func (q *QiniuStorage) Upload(fileInfo *FileInfo, fileHeader *multipart.FileHeader, file multipart.File) (*FileInfo, error) {
+func (q *QiniuStorage) Upload(fileInfo *filesystem.FileInfo, fileHeader *multipart.FileHeader, file multipart.File) (*filesystem.FileInfo, error) {
 	var reader io.Reader = file
 	var size = fileHeader.Size
 
 	putPolicy := storage.PutPolicy{
-		Scope: q.config.Bucket,
+		Scope: q.driverConf.Bucket,
 	}
-	mac := qbox.NewMac(q.config.AccessKey, q.config.SecretKey)
+	mac := qbox.NewMac(q.driverConf.AccessKey, q.driverConf.SecretKey)
 	upToken := putPolicy.UploadToken(mac)
 
 	cfg := storage.Config{
