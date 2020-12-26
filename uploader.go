@@ -1,7 +1,6 @@
 package filesystem
 
 import (
-	"github.com/geiqin/gotools/helper"
 	"github.com/geiqin/xconfig/client"
 	"github.com/geiqin/xconfig/model"
 	"log"
@@ -47,9 +46,6 @@ func NewUploader(disk string,mode ...string) *Uploader  {
 //上传
 func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File, path string, fileName ...string) (*FileInfo, error) {
 	s.conf =s.getCloudConf(s.disk)
-	log.Println("disk name :",s.disk)
-	log.Println("filesystem config :",helper.JsonEncode(filesystemCfg))
-	log.Println("disk config :",helper.JsonEncode(s.conf))
 	maker :=NewMakeFile(s.conf,fileHeader,file,path)
 
 	//是否重命名（否在自动生成）
@@ -83,7 +79,6 @@ func (s *Uploader) getCloudConf(name string) *model.FileSystemInfo {
 	if v==nil{
 		log.Println("错误: FilesystemConfig 中未配置存盘名称：",name)
 	}
-	log.Println("disk:"+name +" disk config v :",helper.JsonEncode(v))
 	s.conf =v
 	return v
 }
