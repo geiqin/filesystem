@@ -82,6 +82,7 @@ func (s *Uploader) getCloudConf(name string) *model.FileSystemInfo {
 	if v==nil{
 		log.Println("错误: FilesystemConfig 中未配置存盘名称：",name)
 	}
+	log.Println("disk:"+name +" disk config v :",helper.JsonEncode(v))
 	s.conf =v
 	return v
 }
