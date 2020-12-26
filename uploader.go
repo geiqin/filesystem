@@ -47,6 +47,7 @@ func NewUploader(disk string,mode ...string) *Uploader  {
 //上传
 func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File, path string, fileName ...string) (*FileInfo, error) {
 	s.conf =s.getLocalConf(s.disk)
+	log.Println("disk name :",s.disk)
 	log.Println("filesystem config :",helper.JsonEncode(filesystemCfg))
 	log.Println("disk config :",helper.JsonEncode(s.conf))
 	maker :=NewMakeFile(s.conf,fileHeader,file,path)
