@@ -45,7 +45,7 @@ func NewUploader(disk string,mode ...string) *Uploader  {
 
 //上传
 func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File, path string, fileName ...string) (*FileInfo, error) {
-
+	s.getLocalConf(s.disk)
 	maker :=NewMakeFile(s.conf,fileHeader,file,path)
 
 	//是否重命名（否在自动生成）
