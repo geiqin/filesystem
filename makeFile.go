@@ -24,20 +24,16 @@ type FileInfo struct {
 
 
 type MakeFile struct {
-	config *model.FilesystemConfig
 	conf   *model.FileSystemInfo
 	header *multipart.FileHeader
 	file   multipart.File
 	fileName string
 	path string
-	//fileHeader *multipart.FileHeader, file multipart.File, path string
-
 }
 
-func NewMakeFile(fileHeader *multipart.FileHeader, file multipart.File, path string) *MakeFile {
+func NewMakeFile(conf *model.FileSystemInfo,fileHeader *multipart.FileHeader, file multipart.File, path string) *MakeFile {
   obj :=&MakeFile{
-	  config:   nil,
-	  conf:     nil,
+	  conf:     conf,
 	  header:   fileHeader,
 	  file:     file,
 	  path: 	path,

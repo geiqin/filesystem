@@ -15,6 +15,7 @@ type IStorage interface {
 type Uploader struct {
 	disk string
 	mode string
+	conf *model.FileSystemInfo
 }
 
 var filesystemCfg *model.FilesystemConfig
@@ -44,7 +45,8 @@ func NewUploader(disk string,mode ...string) *Uploader  {
 
 //上传
 func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File, path string, fileName ...string) (*FileInfo, error) {
-	maker :=NewMakeFile(fileHeader,file,path)
+
+	maker :=NewMakeFile(s.conf,fileHeader,file,path)
 
 	//是否重命名（否在自动生成）
 	if fileName != nil {
@@ -54,7 +56,7 @@ func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File,
 	info,_:=maker.Output()
 
 	//选择七牛云上传
-	qi := NewQiniuStorage(s.getCloudConf(s.disk))
+	qi := NewQiniuStorage(s.conf)
 	ret, err := qi.Upload(info, fileHeader, file)
 	if err != nil {
 		return nil, err
@@ -68,7 +70,7 @@ func (s *Uploader) getLocalConf(name string)*model.FileSystemInfo {
 }
 
 //云储存配置
-func (s *Uploader) getCloudConf(name string)*model.FileSystemInfo {
+func (s *Uploader) getCloudConf(name string) *model.FileSystemInfo {
 	if filesystemCfg ==nil{
 		log.Println("错误: 未加载 FilesystemConfig 配置信息")
 		return nil
@@ -77,6 +79,7 @@ func (s *Uploader) getCloudConf(name string)*model.FileSystemInfo {
 	if v==nil{
 		log.Println("错误: FilesystemConfig 中未配置存盘名称：",name)
 	}
+	s.conf =v
 	return v
 }
 
