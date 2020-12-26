@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"github.com/geiqin/gotools/helper"
 	"github.com/geiqin/xconfig/client"
 	"github.com/geiqin/xconfig/model"
 	"log"
@@ -46,6 +47,7 @@ func NewUploader(disk string,mode ...string) *Uploader  {
 //上传
 func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File, path string, fileName ...string) (*FileInfo, error) {
 	s.getLocalConf(s.disk)
+	log.Println("disk config :",helper.JsonEncode(s.conf))
 	maker :=NewMakeFile(s.conf,fileHeader,file,path)
 
 	//是否重命名（否在自动生成）
