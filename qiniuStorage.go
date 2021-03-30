@@ -11,11 +11,12 @@ import (
 )
 
 type QiniuPutRet struct {
-	Key    string
-	Hash   string
-	Fsize  int
-	Bucket string
-	Name   string
+	Hash         string `json:"hash"`
+	PersistentID string `json:"persistentId"`
+	Key          string `json:"key"`
+	//Size         int64  `json:"size"`
+	//Bucket       string `json:"bucket"`
+	//Name         string `json:"name"`
 }
 
 type QiniuStorage struct {
@@ -23,7 +24,7 @@ type QiniuStorage struct {
 }
 
 func NewQiniuStorage(cnf *model.FileSystemInfo) *QiniuStorage {
-	return  &QiniuStorage{ driverConf: cnf}
+	return &QiniuStorage{driverConf: cnf}
 }
 
 //七牛云图片上传
@@ -59,9 +60,9 @@ func (q *QiniuStorage) Upload(fileInfo *FileInfo, fileHeader *multipart.FileHead
 		log.Println("qiniu put :", err)
 		return nil, err
 	}
-
+	fileInfo.PersistentId = ret.PersistentID
 	fileInfo.Hash = ret.Hash
-	fileInfo.Size = ret.Fsize
+	fileInfo.Size = size
 
 	return fileInfo, nil
 }

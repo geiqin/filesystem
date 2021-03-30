@@ -9,46 +9,45 @@ import (
 	"strings"
 )
 
-
 type FileInfo struct {
-	Title    string `json:"title"`
-	Hash     string `json:"hash"`
-	Size     int `json:"size"`
-	Type     string `json:"type"`
-	RawName  string `json:"raw_name"`
-	FileName string `json:"file_name"`
-	Path     string `json:"path"`
-	SaveUrl  string `json:"save_url"`
-	Url      string `json:"url"`
+	Title        string `json:"title"`
+	Hash         string `json:"hash"`
+	PersistentId string `json:"persistent_id"`
+	Size         int64  `json:"size"`
+	Type         string `json:"type"`
+	RawName      string `json:"raw_name"`
+	FileName     string `json:"file_name"`
+	Path         string `json:"path"`
+	SaveUrl      string `json:"save_url"`
+	Url          string `json:"url"`
 }
-
 
 type MakeFile struct {
-	conf   *model.FileSystemInfo
-	header *multipart.FileHeader
-	file   multipart.File
+	conf     *model.FileSystemInfo
+	header   *multipart.FileHeader
+	file     multipart.File
 	fileName string
-	path string
+	path     string
 }
 
-func NewMakeFile(conf *model.FileSystemInfo,fileHeader *multipart.FileHeader, file multipart.File, path string) *MakeFile {
-  obj :=&MakeFile{
-	  conf:     conf,
-	  header:   fileHeader,
-	  file:     file,
-	  path: 	path,
-	  fileName: "",
-  }
-  return obj
+func NewMakeFile(conf *model.FileSystemInfo, fileHeader *multipart.FileHeader, file multipart.File, path string) *MakeFile {
+	obj := &MakeFile{
+		conf:     conf,
+		header:   fileHeader,
+		file:     file,
+		path:     path,
+		fileName: "",
+	}
+	return obj
 }
 
-func (s *MakeFile)  SetFileName(fileName string)  {
-	s.fileName =fileName
+func (s *MakeFile) SetFileName(fileName string) {
+	s.fileName = fileName
 }
 
 func (s *MakeFile) Output() (*FileInfo, error) {
-	if s.fileName ==""{
-		s.fileName =s.newFileName()
+	if s.fileName == "" {
+		s.fileName = s.newFileName()
 	}
 
 	info := &FileInfo{
@@ -63,7 +62,6 @@ func (s *MakeFile) Output() (*FileInfo, error) {
 
 	return info, nil
 }
-
 
 func (s *MakeFile) extName() string {
 	ext := path.Ext(s.header.Filename)
@@ -96,4 +94,3 @@ func (s *MakeFile) makeUrl(saveUrl string) string {
 	url := fmt.Sprintf("%s://%s/%s", s.conf.Transport, s.conf.Domain, saveUrl)
 	return strings.ToLower(url)
 }
-
