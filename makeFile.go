@@ -9,17 +9,20 @@ import (
 	"strings"
 )
 
+//文件信息
 type FileInfo struct {
-	Title        string `json:"title"`
-	Hash         string `json:"hash"`
-	PersistentId string `json:"persistent_id"`
-	Size         int64  `json:"size"`
-	Type         string `json:"type"`
-	RawName      string `json:"raw_name"`
-	FileName     string `json:"file_name"`
-	Path         string `json:"path"`
-	SaveUrl      string `json:"save_url"`
-	Url          string `json:"url"`
+	Title        string `json:"title"`         //文件标题
+	Hash         string `json:"hash"`          //文件哈希: 相同文件Hash值相同
+	PersistentId string `json:"persistent_id"` //持久化ID
+	Size         int64  `json:"size"`          //文件大小
+	Duration     int64  `json:"duration"`      //播放时长
+	Type         string `json:"type"`          //媒体类型（image/video/voice/document/zip）
+	ExtName      string `json:"ext_name"`      //扩展名称
+	RawName      string `json:"raw_name"`      //原始文件名称
+	FileName     string `json:"file_name"`     //新的文件名称
+	Path         string `json:"path"`          //相对路径
+	SaveUrl      string `json:"save_url"`      //保存完整路径
+	Url          string `json:"url"`           //URL
 }
 
 type MakeFile struct {
@@ -50,12 +53,15 @@ func (s *MakeFile) Output() (*FileInfo, error) {
 		s.fileName = s.newFileName()
 	}
 
+	extName := s.extName()
+
 	info := &FileInfo{
 		Title:    s.header.Filename,
 		RawName:  s.header.Filename,
 		FileName: s.fileName,
 		Path:     s.makePath(s.path),
-		Type:     s.extName(),
+		Type:     extName,
+		ExtName:  extName,
 	}
 	info.SaveUrl = info.Path + "/" + info.FileName
 	info.Url = s.makeUrl(info.SaveUrl)

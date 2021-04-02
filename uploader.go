@@ -20,40 +20,40 @@ type Uploader struct {
 
 var filesystemCfg *model.FilesystemConfig
 
-func init()  {
-	filesystemCfg =client.GetFilesystemConfig()
+func init() {
+	filesystemCfg = client.GetFilesystemConfig()
 }
 
-func NewUploader(disk string,mode ...string) *Uploader  {
-	if disk ==""{
-		disk ="qin_store_public"
+func NewUploader(disk string, mode ...string) *Uploader {
+	if disk == "" {
+		disk = "qin_store_public"
 	}
-	m :="cloud"
-	if mode !=nil{
-		m2 :=mode[0]
-		if m !="cloud" && m !="local"{
+	m := "cloud"
+	if mode != nil {
+		m2 := mode[0]
+		if m != "cloud" && m != "local" {
 			log.Println("错误: Uploader 的 mode 参数只能是 cloud 或者 local 值")
 			return nil
 		}
-		m=m2
+		m = m2
 	}
 	return &Uploader{
-		disk:    disk,
-		mode:	 m,
+		disk: disk,
+		mode: m,
 	}
 }
 
 //上传
 func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File, path string, fileName ...string) (*FileInfo, error) {
-	s.conf =s.getCloudConf(s.disk)
-	maker :=NewMakeFile(s.conf,fileHeader,file,path)
+	s.conf = s.getCloudConf(s.disk)
+	maker := NewMakeFile(s.conf, fileHeader, file, path)
 
 	//是否重命名（否在自动生成）
 	if fileName != nil {
 		maker.SetFileName(fileName[0])
 	}
 
-	info,_:=maker.Output()
+	info, _ := maker.Output()
 
 	//选择七牛云上传
 	qi := NewQiniuStorage(s.conf)
@@ -61,25 +61,28 @@ func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File,
 	if err != nil {
 		return nil, err
 	}
+
+	ret.Type = GetFileType(fileHeader.Filename)
+	ret.ExtName = GetExtName(fileHeader.Filename)
+
 	return ret, nil
 }
 
 //本地储存配置
-func (s *Uploader) getLocalConf(name string)*model.FileSystemInfo {
+func (s *Uploader) getLocalConf(name string) *model.FileSystemInfo {
 	return nil
 }
 
 //云储存配置
 func (s *Uploader) getCloudConf(name string) *model.FileSystemInfo {
-	if filesystemCfg ==nil{
+	if filesystemCfg == nil {
 		log.Println("错误: 未加载 FilesystemConfig 配置信息")
 		return nil
 	}
-	v :=filesystemCfg.Clouds[name]
-	if v==nil{
-		log.Println("错误: FilesystemConfig 中未配置存盘名称：",name)
+	v := filesystemCfg.Clouds[name]
+	if v == nil {
+		log.Println("错误: FilesystemConfig 中未配置存盘名称：", name)
 	}
-	s.conf =v
+	s.conf = v
 	return v
 }
-
