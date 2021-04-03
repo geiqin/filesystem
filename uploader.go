@@ -68,6 +68,14 @@ func (s *Uploader) Upload(fileHeader *multipart.FileHeader, file multipart.File,
 	return ret, nil
 }
 
+//删除文件
+func (s *Uploader) Delete(fileKey string) bool {
+	s.conf = s.getCloudConf(s.disk)
+	//选择七牛云上传
+	qi := NewQiniuStorage(s.conf)
+	return qi.Delete(fileKey)
+}
+
 //本地储存配置
 func (s *Uploader) getLocalConf(name string) *model.FileSystemInfo {
 	return nil

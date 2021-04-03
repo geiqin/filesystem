@@ -21,10 +21,11 @@ type QiniuPutRet struct {
 
 type QiniuStorage struct {
 	driverConf *model.FileSystemInfo
+	bucket     string
 }
 
 func NewQiniuStorage(cnf *model.FileSystemInfo) *QiniuStorage {
-	return &QiniuStorage{driverConf: cnf}
+	return &QiniuStorage{driverConf: cnf, bucket: cnf.Bucket}
 }
 
 //七牛云图片上传
@@ -65,4 +66,26 @@ func (q *QiniuStorage) Upload(fileInfo *FileInfo, fileHeader *multipart.FileHead
 	fileInfo.Size = size
 
 	return fileInfo, nil
+}
+
+func (q QiniuStorage) bucketManager() *storage.BucketManager {
+	mac := qbox.NewMac(q.driverConf.AccessKey, q.driverConf.SecretKey)
+	cfg := storage.Config{
+		Zone:          &storage.ZoneHuanan,
+		UseHTTPS:      false,
+		UseCdnDomains: false,
+	}
+	bucketManager := storage.NewBucketManager(mac, &cfg)
+	return bucketManager
+}
+
+//删除文件
+func (q QiniuStorage) Delete(fileKey string, bucket ...string) bool {
+	bucketManager := q.bucketManager()
+	err := bucketManager.Delete(q.bucket, fileKey)
+	if err != nil {
+		log.Println("qiniu delete err:", err)
+		return false
+	}
+	return true
 }
