@@ -20,6 +20,8 @@ type FileInfo struct {
 	ExtName      string `json:"ext_name"`      //扩展名称
 	RawName      string `json:"raw_name"`      //原始文件名称
 	FileName     string `json:"file_name"`     //新的文件名称
+	Width        int32  `json:"width"`         //图片宽
+	Height       int32  `json:"height"`        //图片高
 	Path         string `json:"path"`          //相对路径
 	SaveUrl      string `json:"save_url"`      //保存完整路径
 	Url          string `json:"url"`           //URL
