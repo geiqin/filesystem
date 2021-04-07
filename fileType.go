@@ -13,7 +13,7 @@ func init() {
 	fileTypes["image"] = []string{"jpg", "jpeg", "png", "gif"}
 	fileTypes["video"] = []string{"avi", "mov", "rmvb", "flv", "mp4", "wmv", "3gp", "rm"}
 	fileTypes["voice"] = []string{"mp3", "wma", "wav"}
-	fileTypes["document"] = []string{"txt", "doc", "docx", "xls", "xlsx", ".ppt", ".pptx", "wps", "pdf"}
+	fileTypes["document"] = []string{"txt", "json", "doc", "docx", "xls", "xlsx", ".ppt", ".pptx", "wps", "pdf"}
 	fileTypes["zip"] = []string{"rar", "zip", "gz"}
 }
 
