@@ -29,7 +29,7 @@ func GetExtName(fileName string) string {
 //获取文件类型
 func GetFileType(fileName string) string {
 	ext := GetExtName(fileName)
-	t := ""
+	t := "other"
 	for k, v := range fileTypes {
 		if helper.InArray(v, ext) {
 			t = k
