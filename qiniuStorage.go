@@ -10,15 +10,6 @@ import (
 	"mime/multipart"
 )
 
-type QiniuPutRet struct {
-	Hash         string `json:"hash"`
-	PersistentID string `json:"persistentId"`
-	Key          string `json:"key"`
-	//Size         int64  `json:"size"`
-	//Bucket       string `json:"bucket"`
-	//Name         string `json:"name"`
-}
-
 type QiniuStorage struct {
 	driverConf *model.FileSystemInfo
 	bucket     string
@@ -28,7 +19,35 @@ func NewQiniuStorage(cnf *model.FileSystemInfo) *QiniuStorage {
 	return &QiniuStorage{driverConf: cnf, bucket: cnf.Bucket}
 }
 
-//七牛云图片上传
+//分片上传
+func (q *QiniuStorage) UploadBySlices(fileInfo *FileInfo, fileHeader *multipart.FileHeader, file multipart.File) (*FileInfo, error) {
+	var reader io.ReaderAt = file
+	var size = fileHeader.Size
+
+	putPolicy := storage.PutPolicy{
+		Scope: q.driverConf.Bucket,
+	}
+	mac := qbox.NewMac(q.driverConf.AccessKey, q.driverConf.SecretKey)
+	upToken := putPolicy.UploadToken(mac)
+	ret := storage.PutRet{}
+
+	putExtra := storage.RputV2Extra{}
+	uploader := storage.NewResumeUploaderV2(q.getCfg())
+	err := uploader.Put(context.Background(), &ret, upToken, fileInfo.SaveUrl, reader, size, &putExtra)
+	if err != nil {
+		log.Println("qiniu put :", err)
+		return nil, err
+	}
+	ss := uploader.InitParts()
+	ss.
+		fileInfo.PersistentId = ret.PersistentID
+	fileInfo.Hash = ret.Hash
+	fileInfo.Size = size
+
+	return fileInfo, nil
+}
+
+//单文件上传
 func (q *QiniuStorage) Upload(fileInfo *FileInfo, fileHeader *multipart.FileHeader, file multipart.File) (*FileInfo, error) {
 	var reader io.Reader = file
 	var size = fileHeader.Size
@@ -39,15 +58,8 @@ func (q *QiniuStorage) Upload(fileInfo *FileInfo, fileHeader *multipart.FileHead
 	mac := qbox.NewMac(q.driverConf.AccessKey, q.driverConf.SecretKey)
 	upToken := putPolicy.UploadToken(mac)
 
-	cfg := storage.Config{
-		Zone:          &storage.ZoneHuanan,
-		UseHTTPS:      false,
-		UseCdnDomains: false,
-	}
-
-	formUploader := storage.NewFormUploader(&cfg)
-
-	ret := &QiniuPutRet{} //ret := storage.PutRet{}
+	formUploader := storage.NewFormUploader(q.getCfg())
+	ret := storage.PutRet{}
 
 	putExtra := storage.PutExtra{
 		Params: map[string]string{
@@ -68,14 +80,18 @@ func (q *QiniuStorage) Upload(fileInfo *FileInfo, fileHeader *multipart.FileHead
 	return fileInfo, nil
 }
 
-func (q QiniuStorage) bucketManager() *storage.BucketManager {
-	mac := qbox.NewMac(q.driverConf.AccessKey, q.driverConf.SecretKey)
+func (q QiniuStorage) getCfg() *storage.Config {
 	cfg := storage.Config{
 		Zone:          &storage.ZoneHuanan,
 		UseHTTPS:      false,
 		UseCdnDomains: false,
 	}
-	bucketManager := storage.NewBucketManager(mac, &cfg)
+	return &cfg
+}
+
+func (q QiniuStorage) bucketManager() *storage.BucketManager {
+	mac := qbox.NewMac(q.driverConf.AccessKey, q.driverConf.SecretKey)
+	bucketManager := storage.NewBucketManager(mac, q.getCfg())
 	return bucketManager
 }
 
