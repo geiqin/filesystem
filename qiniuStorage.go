@@ -38,9 +38,12 @@ func (q *QiniuStorage) UploadBySlices(fileInfo *FileInfo, fileHeader *multipart.
 		log.Println("qiniu put :", err)
 		return nil, err
 	}
-	ss := uploader.InitParts()
-	ss.
-		fileInfo.PersistentId = ret.PersistentID
+	/*
+		ss := uploader.InitParts()
+		ss.
+			fileInfo.PersistentId = ret.PersistentID
+
+	*/
 	fileInfo.Hash = ret.Hash
 	fileInfo.Size = size
 
