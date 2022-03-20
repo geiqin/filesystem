@@ -3,7 +3,6 @@ package filesystem
 import (
 	"fmt"
 	"github.com/geiqin/gotools/helper"
-	"github.com/geiqin/xconfig/model"
 	"mime/multipart"
 	"path"
 	"strings"
@@ -28,14 +27,14 @@ type FileInfo struct {
 }
 
 type MakeFile struct {
-	conf     *model.FileSystemInfo
+	conf     *CloudConfig
 	header   *multipart.FileHeader
 	file     multipart.File
 	fileName string
 	path     string
 }
 
-func NewMakeFile(conf *model.FileSystemInfo, fileHeader *multipart.FileHeader, file multipart.File, path string) *MakeFile {
+func NewMakeFile(conf *CloudConfig, fileHeader *multipart.FileHeader, file multipart.File, path string) *MakeFile {
 	obj := &MakeFile{
 		conf:     conf,
 		header:   fileHeader,

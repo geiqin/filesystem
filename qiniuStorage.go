@@ -2,7 +2,6 @@ package filesystem
 
 import (
 	"context"
-	"github.com/geiqin/xconfig/model"
 	"github.com/qiniu/go-sdk/v7/auth/qbox"
 	"github.com/qiniu/go-sdk/v7/storage"
 	"io"
@@ -11,11 +10,11 @@ import (
 )
 
 type QiniuStorage struct {
-	driverConf *model.FileSystemInfo
+	driverConf *CloudConfig
 	bucket     string
 }
 
-func NewQiniuStorage(cnf *model.FileSystemInfo) *QiniuStorage {
+func NewQiniuStorage(cnf *CloudConfig) *QiniuStorage {
 	return &QiniuStorage{driverConf: cnf, bucket: cnf.Bucket}
 }
 
