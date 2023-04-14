@@ -10,11 +10,11 @@ import (
 	"github.com/qiniu/go-sdk/v7/storage"
 	"io"
 	"mime/multipart"
-	"strings"
 )
 
 //七牛云储存
 type QiniuStorage struct {
+	BaseStorage
 }
 
 func (q QiniuStorage) GetStorageConfig(conf *CloudConfig) *storage.Config {
@@ -37,8 +37,12 @@ func (q QiniuStorage) GetStorageConfig(conf *CloudConfig) *storage.Config {
 }
 
 //上传文件
-func (q QiniuStorage) PushFile(ctx context.Context, conf *CloudConfig, fileInfo *FileInfo, fileHeader *multipart.FileHeader, isOverWrite bool) error {
+func (q QiniuStorage) PushFile(ctx context.Context, conf *CloudConfig, fileInfo *FileInfo, fileHeader *multipart.FileHeader, hasMakeMedia bool, isOverWrite bool) error {
+	q.MakeUrl(conf, fileInfo)
 	fileInfo.Size = fileHeader.Size
+	if hasMakeMedia {
+		_ = q.MakeMediaData(fileInfo, fileHeader)
+	}
 	fs, err := fileHeader.Open()
 	if err != nil {
 		return err
@@ -48,34 +52,10 @@ func (q QiniuStorage) PushFile(ctx context.Context, conf *CloudConfig, fileInfo 
 }
 
 func (q QiniuStorage) PushBytes(ctx context.Context, conf *CloudConfig, fileInfo *FileInfo, data []byte, isOverWrite bool) error {
+	q.MakeUrl(conf, fileInfo)
 	buff := bytes.NewBuffer(data)
 	fileInfo.Size, _ = helper.ToInt64(buff.Len())
 	return q.PushData(ctx, conf, fileInfo, buff, isOverWrite)
-}
-
-//获取远程文件是否有效
-func (q QiniuStorage) GetRemoteResource(conf *CloudConfig, fileInfo *FileInfo) error {
-	q.MakeUrl(conf, fileInfo)
-	/*
-		_, err := http.Get(fileInfo.HostUrl)
-		if err != nil {
-			return err
-		}
-
-	*/
-	return nil
-}
-
-//生成完整url
-func (q QiniuStorage) MakeUrl(conf *CloudConfig, fileInfo *FileInfo) {
-	if !strings.HasSuffix(fileInfo.SavePath, "/") {
-		fileInfo.SavePath = fileInfo.SavePath + "/"
-	}
-	if strings.HasSuffix(conf.HostUrl, "/") {
-		fileInfo.Url = conf.HostUrl + fileInfo.SavePath + fileInfo.FileName
-	} else {
-		fileInfo.Url = conf.HostUrl + "/" + fileInfo.SavePath + fileInfo.FileName
-	}
 }
 
 //上传数据
@@ -89,7 +69,10 @@ func (q QiniuStorage) PushData(ctx context.Context, conf *CloudConfig, fileInfo 
 	if fileInfo.Size <= 0 {
 		return errors.New("fileInfo的 Size 必须大于0")
 	}
-	q.MakeUrl(conf, fileInfo)
+	//如果没有处理url，再处理一次
+	if fileInfo.Url == "" {
+		q.MakeUrl(conf, fileInfo)
+	}
 	pathFile := fileInfo.SavePath + fileInfo.FileName
 	scope := conf.Bucket
 	//是否需要覆盖上传

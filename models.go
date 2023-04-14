@@ -20,16 +20,18 @@ type CloudConfig struct {
 
 //文件信息
 type FileInfo struct {
-	Id           int64  `json:"id"`            //对应数据库ID值
-	PersistentId string `json:"persistent_id"` //持久化ID
-	Hash         string `json:"hash"`          //储存Hash值
-	Type         string `json:"type"`          //文件类型
-	FileName     string `json:"file_name"`     //文件名称
-	SavePath     string `json:"save_path"`     //保存路径
-	Size         int64  `json:"size"`          //文件大小
-	Url          string `json:"url"`           //访问URL
+	Id            int64  `json:"id"`             //对应数据库ID值
+	PersistentId  string `json:"persistent_id"`  //持久化ID
+	Hash          string `json:"hash"`           //储存Hash值
+	Type          string `json:"type"`           //文件类型
+	FileName      string `json:"file_name"`      //文件名称
+	SavePath      string `json:"save_path"`      //保存路径
+	Size          int64  `json:"size"`           //文件大小
+	MediaDuration int64  `json:"media_duration"` //媒体文件时长【视频 / 音频】
+	MediaWidth    int64  `json:"media_width"`    //媒体文件宽度【图片】
+	MediaHeight   int64  `json:"media_height"`   //媒体文件高度【图片】
+	Url           string `json:"url"`            //访问URL
 }
-
 
 //获取文件扩展名（如：jpg/png）
 func (a FileInfo) GetExtName() string {
