@@ -44,6 +44,19 @@ func GetFileExtName(fileName string) string {
 	return extName
 }
 
+//获取文件媒体类型(如：image/video/voice/document/zip/other)
+func GetMediaType(fileName string) string {
+	ext := GetFileExtName(fileName)
+	t := "other"
+	for k, v := range fileTypes {
+		if helper.InArray(v, ext) {
+			t = k
+			break
+		}
+	}
+	return t
+}
+
 //获取新的文件名称（唯一文件名称）
 func GetNewUniqueFilename(oldFilename string) string {
 	ext := path.Ext(oldFilename)
