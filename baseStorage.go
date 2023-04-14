@@ -37,7 +37,7 @@ func (b BaseStorage) MakeUrl(conf *CloudConfig, fileInfo *FileInfo) {
 //处理多媒体文件数据【图片/视频/音频】
 func (b BaseStorage) MakeMediaData(fileInfo *FileInfo, file *multipart.FileHeader) error {
 	var err error
-	fileType := fileInfo.GetType()
+	fileType := fileInfo.GetMediaType()
 	if fileType == "image" {
 		fileInfo.MediaWidth, fileInfo.MediaHeight, err = b.mediaHandle.GetImageScale(file)
 	} else if fileType == "video" || fileType == "voice" {

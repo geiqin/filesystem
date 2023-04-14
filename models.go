@@ -20,11 +20,11 @@ type CloudConfig struct {
 
 //文件信息
 type FileInfo struct {
-	Id            int64  `json:"id"`             //对应数据库ID值
+	Id            int64  `json:"id"`             //对应数据库ID值【备用】
 	PersistentId  string `json:"persistent_id"`  //持久化ID
 	Hash          string `json:"hash"`           //储存Hash值
-	Type          string `json:"type"`           //文件类型
 	FileName      string `json:"file_name"`      //文件名称
+	OriginalName  string `json:"original_name"`  //原始文件名【备用】
 	SavePath      string `json:"save_path"`      //保存路径
 	Size          int64  `json:"size"`           //文件大小
 	MediaDuration int64  `json:"media_duration"` //媒体文件时长【视频 / 音频】
@@ -43,8 +43,8 @@ func (a FileInfo) GetExtName() string {
 	return extName
 }
 
-//获取文件类型(如：image/video/voice/document/zip/other)
-func (a FileInfo) GetType() string {
+//获取媒体类型(如：image/video/voice/document/zip/other)
+func (a FileInfo) GetMediaType() string {
 	ext := a.GetExtName()
 	t := "other"
 	for k, v := range fileTypes {

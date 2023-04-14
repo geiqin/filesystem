@@ -72,7 +72,6 @@ func (b MediaHandle) GetImageScale(file *multipart.FileHeader) (width int64, hei
 	defer f.Close()
 	im, _, err := image.Decode(f)
 	if err != nil {
-		log.Println("make image scale:", err.Error())
 		return 0, 0, err
 	} else {
 		width, _ = helper.ToInt64(im.Bounds().Dx())

@@ -51,6 +51,7 @@ func (q QiniuStorage) PushFile(ctx context.Context, conf *CloudConfig, fileInfo 
 	return q.PushData(ctx, conf, fileInfo, fs, isOverWrite)
 }
 
+//上传字节数据
 func (q QiniuStorage) PushBytes(ctx context.Context, conf *CloudConfig, fileInfo *FileInfo, data []byte, isOverWrite bool) error {
 	q.MakeUrl(conf, fileInfo)
 	buff := bytes.NewBuffer(data)
