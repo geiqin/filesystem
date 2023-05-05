@@ -10,11 +10,22 @@ import (
 	"github.com/qiniu/go-sdk/v7/storage"
 	"io"
 	"mime/multipart"
+	"time"
 )
 
 //七牛云储存
 type QiniuStorage struct {
 	BaseStorage
+}
+
+//生成私有文件下载链接，deadline 为0时表示1小时有效期【私有空间】
+func (q QiniuStorage) MakePrivateURL(conf *CloudConfig, key string, deadline int64) string {
+	mac := qbox.NewMac(conf.AccessKey, conf.SecretKey)
+	if deadline == 0 {
+		deadline = time.Now().Add(time.Second * 3600).Unix() //1小时有效期
+	}
+	privateAccessURL := storage.MakePrivateURL(mac, conf.HostUrl, key, deadline)
+	return privateAccessURL
 }
 
 func (q QiniuStorage) GetStorageConfig(conf *CloudConfig) *storage.Config {
